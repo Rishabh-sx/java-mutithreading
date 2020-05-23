@@ -1,0 +1,101 @@
+Interrupt Method
+
+A thread can Interrupt **sleeping or waiting** thread by using interrupt()
+of thread class.
+
+
+A thread can be in waiting or sleeping state due to sleep() or join() method.
+
+--------------------------------------------------------------------------------
+Case 1: Interrupt call
+
+class MyThread extends Thread{
+    public void run(){
+      // Job of Thread
+      for(int i=0;i<10;i++){
+           try{
+              sop("I am lazy thread");
+              Thread.sleep(2000);
+           }catch (InterruptedException e){
+              sop("I am got Interrupted");
+           }
+      }
+    }
+}
+
+class ThreadDemo{
+
+    psvm() throws InterruptedException{
+      MyThread t = new MyThread();//creating thread instance
+      t.start();
+      t.interrupt();   ------------> Line 1
+      sop("End of Main Thread");
+    }
+  }
+}
+
+
+Output:
+End of Main Thread
+I am lazy thread
+I am got Interrupted
+
+If we comment line 1 the main thread won't interrupt child thread. child thread
+will executed 10 time.
+
+If we comment don't line 1 the main thread interrupt child thread. Output is you
+can see in above example.
+
+--------------------------------------------------------------------------------
+Case 2: Interrupt call in the end of run method execution of child Thread
+
+class MyThread extends Thread{
+    public void run(){
+      // Job of Thread
+      for(int i=0;i<1000;i++)
+        sop("MyThread: "i)
+
+           try{
+              sop("I am lazy thread");
+              Thread.sleep(2000);
+           }catch (InterruptedException e){
+              sop("I am got Interrupted");
+           }
+
+    }
+}
+
+class ThreadDemo{
+
+    psvm() throws InterruptedException{
+      MyThread t = new MyThread();//creating thread instance
+      t.start();
+      t.interrupt();   ------------> Line 1
+      sop("End of Main Thread");
+    }
+  }
+}
+
+Output:
+MyThread: 1
+MyThread: 2
+End of Main Thread
+MyThread: 3
+MyThread: 4
+  ""
+  ""
+MyThread: 1000
+I am lazy thread
+I am got Interrupted
+
+
+In the above example interrupted call waited until child thread executed for loop
+1000 time.
+
+Note:
+- Whenever we are calling interrupt method and if the target thread is not in
+sleeping or waiting then there is no impact call interrupt call immediately.
+- Interrupt thread will impact immediately target thread if target thread
+enter in to sleeping or waiting state.
+- If the never enter in to waiting or sleeping state in its lifecycle the
+interrupt call will be wasted.

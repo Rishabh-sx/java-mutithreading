@@ -1,0 +1,403 @@
+Threads
+
+-Ways to define a Thread
+1. By extending Thread class
+2. By Implementing Runnable
+
+Among two ways of defining a thread. implement Runnable interface is recommended.
+As while using extends Thread method we won't be able to extend other class then Thread
+but in Implementing Runnable interface we have ability to extend other class.
+Hence Implementing Runnable is recommended then extending Thread class
+
+1. Extending Thread class
+
+class MyThread extends Thread{
+      public void run(){
+        // Job of Thread
+        for(int i=0;i<10;i++){
+          sop("Child ThreadDemo")
+        }
+      }
+}
+
+
+class ThreadDemo{
+
+    //Main thread create and start child thread.
+    psvm(){
+      MyThread t = new MyThread();//creating thread instance
+      t.start(); //starting thread
+
+      for(int i=0;i<10;i++){
+        sop("Main Thread")
+      }
+    }
+}
+
+Excpected Output
+
+Output 1        Output 2      Output 3        Output 4
+
+Mainthread    Child Thread  Mainthread    Child Thread
+Mainthread    Child Thread  Mainthread    Child Thread
+Mainthread    Child Thread  Mainthread    Child Thread
+Mainthread    Child Thread  ChildThread   Mainthread
+Mainthread    Child Thread  ChildThread   Mainthread
+ChildThread   Mainthread    ChildThread   Mainthread
+ChildThread   Mainthread    Mainthread    Child Thread
+ChildThread   Mainthread    Mainthread    Child Thread
+ChildThread   Mainthread    ChildThread   Mainthread
+ChildThread   Mainthread    ChildThread   Mainthread
+
+
+-------------------------------------------------------------------------------------------
+Thread Schedular
+
+It is a part of JVM responsible to schedule threads. That is if multiple threads
+are waiting to get the chance of execution. then in which order thread will be
+executed is decided by thread schedular.
+
+We can't expect exact algorithm followed by thread schedular as it is varied from
+JVM to JVM. Schedular can use any algorithm Round Robin, first come first serve etc.
+
+Hence we can expect threads execution order & exact output.
+Hence whenever situation comes to multithreading. there is no guarantee for exact output
+but we can provide several possible outputs.
+
+-------------------------------------------------------------------------------------------
+Difference thread.start() and thread.run()
+
+In case of t.start() a new thread will be created which is responsible for the execution of
+run method but in the case of t.run() a new thread won't be created and the run method will be
+executed just like a normal method call by main thread.
+
+Hence in the example if we replace t.start with t.run then the observations are below.
+
+--------------------
+class MyThread extends Thread{
+      public void run(){
+        // Job of Thread
+        for(int i=0;i<10;i++){
+          sop("Child ThreadDemo")
+        }
+      }
+}
+
+
+class ThreadDemo{
+
+    //Main thread create and start child thread.
+    psvm(){
+      MyThread t = new MyThread();//creating thread instance
+      t.run(); //starting thread
+
+      for(int i=0;i<10;i++){
+        sop("Main Thread")
+      }
+    }
+}
+
+
+thread.run() -> one thread will be doing all task.
+
+Output
+ChildThread
+ChildThread
+ChildThread
+ChildThread
+ChildThread
+Mainthread
+Mainthread
+Mainthread
+Mainthread
+Mainthread
+
+
+--------------------------------------------------------------------------------
+
+Importance of Thread class start Methods
+
+Thread class start methods is responsible to register the thread with the thread schedular
+& all other mandatory activities.Hence with executing thread class start method there is no
+chance of starting new thread in Java. Due to this thread class start method is considers
+as heart of multithreading.
+
+Tasks of start method
+1. Register this thread with Thread Schedular.
+2. Perform all other mandatory activities.
+3. Invoke run method.
+
+--------------------------------------------------------------------------------
+
+Overloading of run method:
+
+It is always possible but thread class start method can invoke no-arg run method.
+The other overloaded method we have to call explicitly like a normal method call.
+
+
+class MyThread extends Thread{
+      public void run(){
+          sop("No Arg Run Method");
+      }
+
+      public void run(int i ){
+           sop("Int-Arg Run Method");
+      }
+}
+
+
+class ThreadDemo{
+
+    //Main thread create and start child thread.
+    psvm(){
+      MyThread t = new MyThread();//creating thread instance
+      t.start();
+    }
+}
+
+Output:
+No Arg Run Method
+
+--------------------------------------------------------------------------------
+
+*If we are not overriding run method in MyThread*
+
+Thread class run method will be executed & hence we will don't get any output.
+
+Note: It is highly recommmended to override run method otherwise don't go for multithreading
+concept
+
+class MyThread extends Thread{}
+
+class ThreadDemo{
+
+    //Main thread create and start child thread.
+    psvm(){
+      MyThread t = new MyThread();//creating thread instance
+      t.start();
+    }
+}
+
+
+No Output
+Output:
+
+--------------------------------------------------------------------------------
+*Overriding start method in MyThread*
+
+If we override start method then MyThread start will be executed just like normal
+method & new thread won't be created.
+
+Note:It is not recommended to override start method otherwise don't go for
+Multithreading programming.
+
+------------------------------
+class MyThread extends Thread{
+    public void start(){
+        sop("Overrided start Method");
+    }
+    public void run(){
+        sop("Run Method");
+    }
+
+}
+
+class ThreadDemo{
+
+    //Main thread create and start child thread.
+    psvm(){
+      MyThread t = new MyThread();//creating thread instance
+      t.start();
+      sop("Main Method");
+    }
+}
+
+Output:
+Overrided start Method
+Main Method
+--------------------------------------------------------------------------------
+*Overriding start method in MyThread with super.start()*
+
+Note: if you use super.start() in override start method of MyThread then it will
+work like threading concept.
+
+class MyThread extends Thread{
+    public void start(){
+        super.start()
+        sop("Overrided start Method");
+    }
+    public void run(){
+        sop("Run Method");
+    }
+
+}
+
+class ThreadDemo{
+
+    //Main thread create and start child thread.
+    psvm(){
+      MyThread t = new MyThread();//creating thread instance
+      t.start();
+      sop("Main Method");
+    }
+}
+
+Output:
+
+Output 1
+Overrided start Method
+Run Method
+Main Method
+
+Output 2
+Overrided start Method
+Main Method
+Run Method
+
+Output 3
+Run Method
+Overrided start Method
+Main Method
+
+--------------------------------------------------------------------------------
+Thread Life Cycle
+
+New Born[MyThread t = new MyThread();]
+            |
+            |  t.start();
+            |
+        Ready/Runnable
+            |
+            |  If thread schedular allocates processor
+            |
+          Running
+            |
+            |If run method completes
+            |
+           Dead
+
+After starting a thread and if we are trying to restart the same thread again then we will
+get runtime exception saying:
+IllegalTheadState Exception.
+
+Thread t = new Thread();
+t.start();
+    |
+    |
+t.start();
+
+
+********************************************************************************
+
+
+Defining a thread by Implementing Runnable Interface.
+
+We can define a thread by Implementing Runnable Interface.
+
+Runnable interface is present in java.lang package and contains only one method
+run().
+
+
+Class MyRunnable implements Runnable{
+    public void run(){
+      for(int i = 0;i<10;i++){
+          sopln("Child Thread");
+      }
+    }
+}
+
+Class ThreadDemo {
+
+    psvm(){
+      MyRunnable r = new MyRunnable();
+      Thread t = new Thread(r);
+      t.start();
+      for(int i=0;i<10;i++){
+        sop("Main Thread")
+      }
+    }
+
+}
+
+Output:
+Mainthread    Child Thread  Mainthread    Child Thread
+Mainthread    Child Thread  Mainthread    Child Thread
+Mainthread    Child Thread  Mainthread    Child Thread
+Mainthread    Child Thread  ChildThread   Mainthread
+Mainthread    Child Thread  ChildThread   Mainthread
+ChildThread   Mainthread    ChildThread   Mainthread
+ChildThread   Mainthread    Mainthread    Child Thread
+ChildThread   Mainthread    Mainthread    Child Thread
+ChildThread   Mainthread    ChildThread   Mainthread
+ChildThread   Mainthread    ChildThread   Mainthread
+
+
+--------------------------------------------------------------------------------
+Case Study:
+
+Class MyRunnable implements Runnable{
+    public void run(){
+      for(int i = 0;i<3;i++){
+          sopln("Child Thread");
+      }
+    }
+}
+
+Class ThreadDemo {
+
+    psvm(){
+
+      MyRunnable r = new MyRunnable();
+      Thread t1 = new Thread();
+      Thread t2 = new Thread(r);
+      t.start();
+
+    }
+
+}
+
+Case 1:t1.start()
+A new thread will be created which is responsible for the execution of thread
+Class run method, which has empty implementation.
+
+//No Output will be there
+Output:
+----------------------------------------------
+Case 2:t1.run()
+No new thread will be created and thread class run method will be executed just
+like a normal method call which has empty implementation.
+//No Output will be there
+Output:
+----------------------------------------------
+Case 3:t2.start()
+A new thread will be created which is responsible for the execution of MyRunnable
+class run method.
+
+//MyRunnable run method will be executed
+Output:
+Child Thread
+Child Thread
+Child Thread
+
+----------------------------------------------
+Case 4:t2.run()
+A new thread won't be created and My MyRunnable run method will be executed just
+like a normal method call.
+//MyRunnable run method will be executed but no new thread will be created
+Output:
+Child Thread
+Child Thread
+Child Thread
+----------------------------------------------
+Case 5: r.start();// Compile time error: Can not find symbol method start in
+Class MyRunnable.
+
+My MyRunnable doesn't have start method. So we will get Compile Time Error.
+
+----------------------------------------------
+Case 6: r.run()
+MyRunnable run method will be executed just like normal method and no thread
+will be created.
+
+
+-------------------------------------------------------------------------------

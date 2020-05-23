@@ -1,0 +1,71 @@
+We can prevent thread execution by using following methods:
+1. yield()
+2. join()
+3. sleep()
+
+
+sleep()
+
+If your thread don't want to perform any operation then we should go for sleep
+method.
+
+Example: Slide Rotator
+          10sec           10sec
+|slide1| ------->|slide2| -----> |slide3|
+
+
+
+Methods
+
+public static native void sleep(long ms) throws Interrupted Exception;
+
+public static native void sleep(long ms, int ns) throws Interrupted Exception;
+
+Note: Every sleep method throws Interrupted Exception which is check Exception.
+Hence whenever we are using sleep method. Compulsorily we should handle this
+Exception.Either by throws or try catch. Otherwise we will get compile time error.
+
+
+
+New/Born[MyThread t = new MyThread();
+            |
+            |  t.start();
+            |                           1. if time expires.
+            |                           3. if sleeping thread get Interrupted.
+        Ready/Runnable  <---------------------
+            |                                |
+If thread   |                                |
+schedular   |                                |
+allocates   |                                |
+processor   |                       | sleeping state |
+            |                                ^
+            |                                |
+            |                                |
+            |                                |
+          Running ----------------------------
+            |               Thread.sleep(1000)
+If run      |               Thread.sleep(1000,100)
+method      |
+completes   |
+            |
+           Dead
+
+
+
+Class ThreadDemo{
+    psvm() throws Interrupted Exception{
+        for(int i=0;i<5;i++){
+            sop("Slide: "+i);
+            Thread.sleep(1000);
+       }
+    }
+}
+
+Output:
+Slide: 1
+Slide: 2
+Slide: 3
+Slide: 4
+Slide: 5
+
+--------------------------------------------------------------------------------

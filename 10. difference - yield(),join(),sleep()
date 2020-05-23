@@ -1,0 +1,20 @@
+
+
+    Property                          ||   yield()    ||  join()    ||  sleep()
+1.  Purpose                           ||              ||            ||
+2.  Is it overloaded                  ||     no       ||    yes     ||   yes
+3.  Is it final                       ||     no       ||    yes     ||   yes
+4.  Is it throws InterruptedException ||     no       ||    yes     ||   yes
+5.  Is it Native                      ||     no       ||    yes     ||   sleep(long ms) -> Native
+                                      ||              ||            ||   sleep(long ms,int ns) -> Non Native
+6.  Is it static                      ||     yes      ||    no      ||   yes
+
+Purpose:
+If your thread want to pass the execution to the remaining thread of same priority.
+then we should go for yield()
+
+If your thread want to wait for the execution of the other thread.
+then we should go for join()
+
+If your thread want to perform any operation for particular amount of time.
+then we should go for sleep()

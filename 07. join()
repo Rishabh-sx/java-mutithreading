@@ -1,0 +1,265 @@
+We can prevent thread execution by using following methods:
+1. yield()
+2. join()
+3. sleep()
+
+join()
+
+if your thread wants to wait until completing some other thread then we should
+go for join method.
+
+For example: If a thread t1 wants to wait until completing t2 then t1 has to
+call t2.join(). If t1 executes t2.join() then immediately t1 will be entered in
+to waiting state until t2 completes. Once t2 completes then t1 can continue its
+execution.
+
+
+Wedding example:
+
+Venue Fixing          Wedding Printing Cards       Wedding Cards Distribution
+
+    t1                    t2                               t3
+    |                     |                                |
+                        t1.join();                      t2.join();
+
+
+-Wedding Printing Cards t2 has to wait until venue fixing thread completion.
+Hence t2 has to call t1.join
+-Wedding Cards Distribution t3 has to wait until Wedding Printing Cards t2.
+Hence t3 has to call t2.join
+
+
+public final void join() throw Interrupted Exception
+public final void join(long milliseconds) throws Interrupted Exception
+public final void join(long milliseconds, int nanoseconds) throws Interrupted Exception
+
+Note: Every join method throws Interrupted Exception which is checked Exception
+Hence we have to handle this Exception either by try catch or by throws keyword
+otherwise we will get compile time error.
+
+
+
+New/Born[MyThread t = new MyThread();
+            |
+            |  t.start();
+            |                           1. if t2 completes.
+            |                           2. if time expires.
+            |                           3. if waiting thread Interrupted.
+        Ready/Runnable  <---------------------
+            |                                |
+If thread   |                                |
+schedular   |                                |
+allocates   |                                |
+processor   |                   | Waiting State[Blocked for joining]|
+            |                                ^
+            |                                |
+            |                                |
+            |                                |
+          Running ----------------------------
+            |               t2.join(),
+If run      |               t2.join(1000),
+method      |               t2,join(1000,10)
+completes   |
+            |
+           Dead
+
+------------------------------------------------
+Case 1: When main thread have to wait for child thread to complete
+
+class MyThread extends Thread{
+    public void run(){
+      // Job of Thread
+      for(int i=0;i<5;i++){
+           sop("Child Thread")
+           try{
+              Thread.sleep(2000);
+           }catch (Interrupted e){
+
+           }
+      }
+    }
+}
+
+class ThreadDemo{
+  //Main thread create and start child thread.
+    psvm() throws Interrupted Exception{
+      MyThread t = new MyThread();//creating thread instance
+      t.start(); //starting thread
+      t.join(); ----->Line 1 // main thread have to wait till child thread execution.
+      for(int i=0;i<5;i++){
+             sop("Main Thread");
+    }
+  }
+}
+
+
+Output:
+Child Thread
+Child Thread
+Child Thread
+Child Thread
+Child Thread
+Main Thread
+Main Thread
+Main Thread
+Main Thread
+Main Thread
+
+- If comment line 1 then both main and child thread will be executed simultaneously
+and we can't expect exact output.
+
+- If we don't comment line 1 then main thread will call t1.join, then main thread
+will wait till child completes.
+
+----------------------------------------------
+
+class MyThread extends Thread{
+    public void run(){
+      // Job of Thread
+      for(int i=0;i<10;i++){
+           sop("Child Thread")
+           try{
+              Thread.sleep(2000);
+           }catch (Interrupted e){
+
+           }
+      }
+    }
+}
+
+class ThreadDemo{
+  //Main thread create and start child thread.
+    psvm() throws Interrupted Exception{
+      MyThread t = new MyThread();//creating thread instance
+      t.start(); //starting thread
+      t.join(1000);   // main thread have to wait max 1000 milliseconds till
+                      //  child thread execution.
+      for(int i=0;i<10;i++){
+             sop("Main Thread");
+    }
+  }
+}
+
+Output:
+Child Thread
+Child Thread
+Child Thread
+Child Thread
+Child Thread
+Main Thread
+Main Thread
+Main Thread
+Main Thread
+Main Thread
+Main Thread
+Main Thread
+Main Thread
+Main Thread
+Child Thread
+Child Thread
+Main Thread
+Child Thread
+Child Thread
+Child Thread
+
+----------------------------------------------
+
+Case 2
+When child thread have to wait for main thread.
+
+In this example MyThread thread joins main thread.Hence MyThread will wait until
+main thread completes.
+
+
+class MyThread extends Thread{
+
+static Thread mt;
+
+    public void run(){
+      // Job of Thread
+      try{
+         mt.join();
+      }catch (Interrupted e){}
+
+      for(int i=0;i<10;i++){
+           sop("Child Thread")
+      }
+    }
+}
+
+class ThreadDemo{
+
+    psvm() throws Interrupted Exception{
+      MyThread.mt = Thread.currentThread();
+      MyThread t = new MyThread();
+      t.start(); //starting thread
+      for(int i=0;i<10;i++){
+             sop("Main Thread");
+             Thread.sleep(2000);
+    }
+  }
+}
+
+Output:
+Main Thread
+Main Thread
+Main Thread
+Main Thread
+Main Thread
+Main Thread
+Main Thread
+Main Thread
+Main Thread
+Child Thread
+Child Thread
+Child Thread
+Child Thread
+Child Thread
+
+--------------------------------------------------
+Case 3
+If MyThread thread joins main thread & main thread joins MyThread.
+Both the threads will wait forever and program will stuck and this is something
+like Deadlock
+
+class MyThread extends Thread{
+
+static Thread mt;
+
+    public void run(){
+      // Job of Thread
+      try{
+         mt.join();
+      }catch (Interrupted e){}
+
+      for(int i=0;i<10;i++){
+           sop("Child Thread")
+      }
+    }
+}
+
+class ThreadDemo{
+
+    psvm() throws Interrupted Exception{
+      MyThread.mt = Thread.currentThread();
+      MyThread t = new MyThread();
+      t.start(); //starting thread
+      t.join();
+      for(int i=0;i<10;i++){
+             sop("Main Thread");
+             Thread.sleep(2000);
+    }
+  }
+}
+
+-------------------------------------------------
+Case 4
+
+If your thread calls join method on same thread itself. Then program will stuck
+something like deadlock. In this case thread has to wait infinite amount of time.
+
+class ThreadDemo{
+    psvm() throws Interrupted Exception{
+      Thread.currentThread().join();
+  }
+}

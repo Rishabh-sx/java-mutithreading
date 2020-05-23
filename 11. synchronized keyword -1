@@ -1,0 +1,267 @@
+Synchronization
+
+synchronized is a modifier applicable only for methods and block but not for classes
+& variable. If multiple thread operate simultaneously on same java object then there
+may be data inconsistency problem. To overcome this problem we should go for Synchronized
+keyword. If your methods or block is declared as Synchronized then at a time only one
+thread can execute that method or block on the given object so that data inconsistency
+problem will be resolved.
+
+The main advantage of synchronized keyword is that we can resolve data inconsistency
+problem. The main disadvantage synchronized keyword is that it increased waiting
+time of thread and creates performance problem. Hence if there is no specific
+problem then it is not recommended to use synchronized keyword.
+
+
+                    Telephone booth
+                    with lock which is locked
+                    by person inside.
+
+                    ----------
+ O        O         |   O    |
+\|/      \|/        |  \|/   |  When this person will release the lock then
+ |        |         |   |    |  others can enter and use the Telephone.
+/ \      /\         |   |    |
+                    ----------
+
+Internally Synchronization is implemented by using lock. Every object in java has
+a unique lock. when every we are using synchronized keyword then only lock concept
+will come in to picture.
+
+If a thread wants to execute synchronized method on the given object first it has
+to get lock of that object. Once a thread got the lock then it is allowed to
+execute any synchronized method on that object. Once method execution completes.
+Automatically  thread releases the lock. Acquiring and releasing lock is Internally
+managed by JVM and programmer is not responsible to manage it.
+
+
+-------------------------------------------------------------------------------
+
+Lock is concept is implemented based on object but not based on method.
+
+
+Class x{
+
+  synchronized m1()
+  synchronized m2()
+  m3()
+
+}
+                                     -------------      t1->l(x)
+    wating(t2->m1() || t3->m2())    |  x object   |     execution on going for m1()
+                                     -------------
+
+t1 came to execute m1() method and starts it execution
+t1-> got lock of x
+
+if t2 ask for m1() execution from object. object will ask t2 thread to wait until
+lock gets available again from t1 thread
+
+if t3 ask for m2() execution from object. object will ask t3 thread to wait until
+lock gets available again from t1 thread.
+
+As object lock is not available due to t1 thread Acquizition on it. No other thread
+can execute synchronized methods of this object until lock get free again.
+
+if t4 ask for m3() execution then it can do as m3() is not synchronized.
+
+While a thread executing synchronized method on the given object. The remaining threads
+are not allowed to execute any synchronized method simultaneously on the same object but
+remaining threads are allowed to execute non-synchronized method simultaneously.
+
+--------------------------------------------------------------------------------
+
+Object
+----------------------------------------
+|                 |                    |
+| Non synchronized |   synchronized Area |
+|  Area           |                    |
+|                 |                    |
+----------------------------------------
+
+
+Non synchronized area can be accessed by any no of threads simultaneously.
+
+synchronized This can be accessed by only one thread at a time.
+
+Class X{
+      synchronized Area{
+        // Here object state changes so these operation should synchronizedd.
+        add();
+        remove();
+        delete();
+        replace();
+      }
+
+      Non-synchronized Area{
+        // Here object state won't changes so these operation should not be
+          synchronized
+        read();
+      }
+}
+
+--------------------------------------------------------------------------------
+
+Class ReservationSystem{
+
+  //non synchronized
+  checkAvialability(){
+
+  }
+
+  //synchronized
+  synchronized bookTicket(){
+
+  }
+
+}
+
+--------------------------------------------------------------------------------
+Class Display{
+
+    public synchronized void wish(String name)
+    for(int i = 0;i<5;i++){
+        try{
+          sop("Hello");
+          Thread.sleep(200)
+          sop(name);
+        }catch(InterruptedException e){
+
+        }
+    }
+}
+Class MyThread extends Thread{
+
+  Display d;
+  String name;
+
+  MyThread(Display d,String name){
+      this.d = d;
+      this.name = name;
+  }
+
+  public void run(){d.wish(name);}
+}
+
+Class synchronizedDemo(){
+    psvm(){
+      Display d = new Display();
+      MyThread t1 = new MyThread(d,"Dhoni");
+      MyThread t2 = new MyThread(d,"Yuvraj");
+      MyThread t3 = new MyThread(d,"Kholi");
+
+      t1.start();
+      t2.start();
+      t3.start();
+    }
+}
+
+if we are not declaring wish method as synchronized than all 3 threads will executed
+simultaneously and hence we will get irregular output.
+
+Output:
+Hello: Dhoni
+Hello: Kholi
+Hello
+Hello:
+Hello: Dhoni
+Hello: Dhoni
+Dhoni
+Yuvraj
+Hello:Yuvraj
+Hello:
+Hello: Kholi
+Dhoni
+Hello: Kholi
+Hello: Kholi
+Hello:
+Hello: Yuvraj
+Kholi
+Hello: Yuvraj
+Hello: Yuvraj
+
+
+if we declare wish method as synchronized than only one thread will execute for
+display object at a time and hence we will get regular output.
+
+Output:
+Hello: Kholi
+Hello: Kholi
+Hello: Kholi
+Hello: Kholi
+Hello: Kholi
+Hello: Yuvraj
+Hello: Yuvraj
+Hello: Yuvraj
+Hello: Yuvraj
+Hello: Yuvraj
+Hello: Dhoni
+Hello: Dhoni
+Hello: Dhoni
+Hello: Dhoni
+Hello: Dhoni
+
+--------------------------------------------------------------------------------
+Case Study:
+
+Class Display{
+
+    public void wish(String name)
+    for(int i = 0;i<5;i++){
+        try{
+          sop("Hello");
+          Thread.sleep(200)
+          sop(name);
+        }catch(InterruptedException e){
+
+        }
+    }
+}
+
+Class MyThread extends Thread{
+
+  Display d;
+  String name;
+
+  MyThread(Display d,String name){
+      this.d = d;
+      this.name = name;
+  }
+
+  public void run(){d.wish(name);}
+}
+
+Class synchronizedDemo(){
+    psvm(){
+      Display d1 = new Display();
+      Display d2 = new Display();
+      MyThread t1 = new MyThread(d1,"Dhoni");
+      MyThread t2 = new MyThread(d2,"Yuvraj");
+
+      t1.start();
+      t2.start();
+
+    }
+}
+
+Output:
+Hello: Dhoni
+Hello: Yuvraj
+Hello: Dhoni
+Hello: Yuvraj
+Hello: Dhoni
+Hello: Yuvraj
+Hello: Dhoni
+Hello: Yuvraj
+Hello: Dhoni
+Hello: Yuvraj
+
+
+[d1] t1->l(d1)
+[d2] t2->l(d2)
+
+Here threads are operating on different java object.
+
+Conclusion: if multiple threads are operating on same java
+object then Synchronization is required if multiple thread are operating on multiple
+java object then Synchronization is not required.

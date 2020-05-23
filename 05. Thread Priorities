@@ -1,0 +1,129 @@
+Thread Priorities
+
+1-10 min-max
+
+- Every Thread in java has some priority which may be provided JVM or customised
+priority provided by programmer.
+
+- The valid range of thread priority is 1-10 where 1 is min priority and 10 is max
+priority
+
+- Thread class have following constants for thread priority.
+  Thread.MIN_PRIORITY->1
+  Thread.NORM_PRIORITY->5
+  Thread.MAX_PRIORITY->10
+
+- Thread Schedular will use the Priorities while allocating processor. The thread which
+is having highest priority will get the chance first.
+
+- If 2 threads having same priority then we can't expect exact execution order as
+it depends on thread schedular.
+
+- Thread class define following methods to get and setPriority of your thread.
+
+public final int getPriority();
+
+public final int setPriority();//Allowed value range 1 to 10 otherwise we will get
+Runtime exception IllegalArgumentException
+
+
+- The default priority only for the main thread is Thread.NORM_PRIORITY->5
+But for all remaining thread default priority will be inherited from parent to child
+that is whatever priority parent thread
+(this is not parent class Thread this is the parent who is creating and starting the thread)
+has the same priority will be there for the child thread.
+
+---------------------------------------------
+
+class MyThread extends Thread{
+
+}
+
+
+class ThreadDemo{
+
+    //Main thread create and start child thread.
+    psvm(){
+      MyThread t = new MyThread();//creating thread instance
+      Thread.currentThread().setPriority(8)
+      sop("Main Thread priority"+ Thread.currentThread().getPriority());
+      sop("MyThread Thread priority" +t.getPriority())
+    }
+}
+
+Output:
+Main Thread priority 8
+MyThread Thread priority 8
+
+
+----------------------------------------------
+
+class MyThread extends Thread{
+
+}
+
+
+class ThreadDemo{
+
+//Main thread create and start child thread.
+psvm(){
+  MyThread t = new MyThread();//creating thread instance
+  //Thread.currentThread().setPriority(8)
+  sop("Main Thread priority"+ Thread.currentThread().getPriority());
+  sop("MyThread Thread priority" +t.getPriority())
+}
+}
+
+Output:
+Main Thread priority 5
+MyThread Thread priority 5
+
+------------------------------------------------
+
+
+
+class MyThread extends Thread{
+
+    public void run(){
+        for(int i =0;i<5;i++)
+          sop("Child Thread")
+
+    }
+
+}
+
+
+class ThreadDemo{
+
+  //Main thread create and start child thread.
+  psvm(){
+    MyThread t = new MyThread();//creating thread instance
+    t.setPriority(10)
+    t.start();
+    for(int i =0;i<5;i++)
+      sop("Main Thread")
+  }
+}
+output:
+
+Child Thread
+Child Thread
+Child Thread
+Child Thread
+Child Thread
+Main Thread
+Main Thread
+Main Thread
+Main Thread
+Main Thread
+
+
+
+If we comment line "t.setPriority(10)" the both the thread will have same
+priority 5 then we can't except execution order & output.
+
+if we don't comment "t.setPriority(10)" then the main thread have priority 10
+and main thread have priority 5 then in this case MyThread will execute 5 time
+first and then main thread will execute for loop 5 times.
+
+Some platform won't provide proper support for thread priorities.

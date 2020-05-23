@@ -1,0 +1,32 @@
+Introduction
+
+Multitasking
+
+- Executing of several task simultaneously is a concept of Multitasking.
+
+Two types of Multitasking
+1. Process Based
+2. Thread Based Multitasking.
+
+-----------------------------------------------------------------------------------------
+Process Based Multitasking.
+Executing several task simultaneously where each task is a separate independent
+program[process] is called process based Multitasking 
+
+For example: While coding we can listen songs and can download files from browsers
+All these tasks will be executed simultaneously & independent of each other. hence it is
+process based Multitasking
+
+Best suitable for OS level.
+------------------------------------------------------------------------------------------
+Thread Based Multitasking
+Executing several task simultaneously where each task is separate independent
+part of same program is called Thread based Multitasking.
+
+Each independent part is called thread.
+
+Thread based Multitasking is best suitable at Programmatic Level.
+- Used to reduce processor ideal time.
+- Improve response time.
+- Increase performance of the system.
+------------------------------------------------------------------------------------------

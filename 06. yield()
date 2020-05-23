@@ -1,0 +1,70 @@
+We can prevent thread execution by using following methods:
+1. yield()
+2. join()
+3. sleep()
+
+--------------------------------------------------------------------------------
+yield()
+
+1. yield method causes to pause current executing thread to give the chance for
+waiting thread of same priority or high priority. If there is no waiting thread
+or all waiting thread have low priority then same thread can continue its
+execution
+
+2. If multiple threads are waiting with the same priority then which waiting
+thread will get the chance. we can't except as it depends on thread schedular.
+
+3. The thread which is yielded, when it will get the chance one again it depends
+on thread schedular and we can expect it execution agin.
+
+4. Long running threads require yield method.
+
+public static native void yield();
+-----------------------------------------------
+New/Born[MyThread t = new MyThread();
+            |
+            |  t.start();
+            |
+        Ready/Runnable  <-------------
+            |                        |
+            |  If thread schedular   |Thread.yield();
+            |   allocates processor  |
+          Running -------------------
+            |
+            |If run method completes
+            |
+           Dead
+-----------------------------------------------
+
+class MyThread extends Thread{
+   public void run(){
+        // Job of Thread
+        for(int i=0;i<10;i++){
+             sop("Child ThreadDemo")
+             Thread.yield(); ----> Line 1
+         }
+    }
+  }
+
+
+class ThreadYieldDemo{
+
+      //Main thread create and start child thread.
+      psvm(){
+        MyThread t = new MyThread();//creating thread instance
+        t.start(); //starting thread
+        for(int i=0;i<10;i++){
+            sop("Main Thread")
+        }
+      }
+}
+
+In the above program if we comment line 1 both the thread will execute
+simultaneously. We can't expect execution order. But if we don't comment line 1
+then main thread will get processor more time than MyThread. As after every
+execution MyThread calls Thread.yield() which check if other thread with same
+priority is waiting or not.
+
+Some platform won't provide proper support for yield method.
+
+--------------------------------------------------------------------------------
